@@ -1,7 +1,7 @@
 /* 
  * Implementation of a simple vector class.
  * From accelerated c++ book
- * 18/02/13		
+ * 18/02/13		teome	
  */
 #ifndef VEC_H
 #define VEC_H

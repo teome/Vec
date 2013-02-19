@@ -2,7 +2,7 @@
  * vec.cpp
  * Simple implementation of the vector class.
  * Based on notes from the Accelerated C++ book.
- * 18/02/13		Dominic Kelly.
+ * 18/02/13		teome.
  */
 #include <iostream>
 #include <cstddef>
