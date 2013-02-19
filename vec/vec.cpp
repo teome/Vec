@@ -92,26 +92,26 @@ template <class T> void Vec<T>::unchecked_append(const T& val)
 	alloc.construct(avail++, val);
 }
 
+// template <class T> void Vec<T>::erase(size_type i)
+// {
+// 	// need to delete element, shift all down, then resize
+// 	if (data && data[i]) {
+// 		size_type kNewSize = limit - data - 1;
+// 		iterator new_data = alloc.allocate(kNewSize);
+// 		iterator new_avail = uninitialized_copy(data, i, new_data);
+// 		new_avail = uninitialized_copy(i + 1, avail, new_avail);
+// 		// free the old space
+// 		uncreate();
+// 
+// 		data = new_data;
+// 		avail = new_avail;
+// 		limit = data + kNewSize;
+// 
+// 	} else 
+// 		std::cerr << "Tried to delete nonexistent Vec elememt!\n";
+// }
+
 template <class T> void Vec<T>::erase(size_type i)
-{
-	// need to delete element, shift all down, then resize
-	if (data && data[i]) {
-		size_type kNewSize = limit - data - 1;
-		iterator new_data = alloc.allocate(kNewSize);
-		iterator new_avail = uninitialized_copy(data, i, new_data);
-		new_avail = uninitialized_copy(i + 1, avail, new_avail);
-		// free the old space
-		uncreate();
-
-		data = new_data;
-		avail = new_avail;
-		limit = data + kNewSize;
-
-	} else 
-		std::cerr << "Tried to delete nonexistent Vec elememt!\n";
-}
-
-template <class T> void Vec<T>::eraseLoop(size_type i)
 {
 	if (data && data[i])
 		// set the new data avail size.
@@ -124,6 +124,22 @@ template <class T> void Vec<T>::eraseLoop(size_type i)
 		// avail now becomes one-past-end pointer
 		alloc.destroy(avail);
 }
+
+template <class T> 
+typename Vec<T>::iterator Vec<T>::erase(iterator b, iterator e)
+{
+	if (data && b && e) {
+		// copy elements after the end to the erase section 
+		while (e != avail)
+			*b++ = *e++;
+
+		// now b points to one past the last valid data so delete the rest
+		while (avail != b)
+		   alloc.destroy(--avail);
+	}
+	return avail;
+}	
+
 
 template <class T> void Vec<T>::clear()
 {

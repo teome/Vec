@@ -38,7 +38,7 @@ public:
 	}
 
 	void erase(size_type);
-	void eraseLoop(size_type);
+	iterator erase(iterator, iterator);
 	void clear();
 	
 	size_type size() const { return avail - data; }
