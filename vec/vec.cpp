@@ -4,6 +4,8 @@
  * Based on notes from the Accelerated C++ book.
  * 18/02/13		Dominic Kelly.
  */
+#include <iostream>
+#include <cstddef>
 #include <memory> // provides the allocator class for dynamic memory
 #include "vec.h"
 
@@ -27,7 +29,7 @@ Vec<T>& Vec<T>::operator=(const Vec& rhs)
 // This is used instead of new/delete since these initialise each element
 // when there is no need to introduce this overhead here, particularly when
 // a Vec is grown to twice the size and may never use all the elements
-template <class T> void Vec<t>::create();
+template <class T> void Vec<T>::create()
 {
 	data = avail = limit = 0;
 }
@@ -61,7 +63,7 @@ template <class T> void Vec<T>::uncreate()
 }
 
 // grow the vector based on doubling principle for efficiency
-templete <class T> void Vec<T>::grow()
+template <class T> void Vec<T>::grow()
 {
 	// Twice as much.
 	// Use max so that the function still works if called on an empty
@@ -90,3 +92,47 @@ template <class T> void Vec<T>::unchecked_append(const T& val)
 	alloc.construct(avail++, val);
 }
 
+template <class T> void Vec<T>::erase(size_type i)
+{
+	// need to delete element, shift all down, then resize
+	if (data && data[i]) {
+		size_type kNewSize = limit - data - 1;
+		iterator new_data = alloc.allocate(kNewSize);
+		iterator new_avail = uninitialized_copy(data, i, new_data);
+		new_avail = uninitialized_copy(i + 1, avail, new_avail);
+		// free the old space
+		uncreate();
+
+		data = new_data;
+		avail = new_avail;
+		limit = data + kNewSize;
+
+	} else 
+		std::cerr << "Tried to delete nonexistent Vec elememt!\n";
+}
+
+template <class T> void Vec<T>::eraseLoop(size_type i)
+{
+	if (data && data[i])
+		// set the new data avail size.
+		// avail is temporarily a valid element
+		avail -= 1;
+		while (i != avail)
+			data[i] = data[i++ + 1];
+
+		// destroy constructed element on the end.
+		// avail now becomes one-past-end pointer
+		alloc.destroy(avail);
+}
+
+template <class T> void Vec<T>::clear()
+{
+	if (data) {
+		iterator it = avail;
+		while (it != data)
+			alloc.destroy(--it);
+
+		// keep all the space, just reset pointers to empty Vec
+	}
+	data = avail = limit = 0;
+}

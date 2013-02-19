@@ -15,3 +15,5 @@
 # Vim files
 *.swp
 
+#CMake build dir
+build*
